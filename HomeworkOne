@@ -44,7 +44,7 @@ import matplotlib.pyplot as plt
 import random
 import cv2
 
-im = cv2.imread('/Users/RJ/PycharmProjects/ComputerVision/test.png',0)
+im = cv2.imread('/Users/RJ/PycharmProjects/Computer_Vision/test.png',0)
 im = cv2.resize(im, (100,100))
 im_reshape = numpy.reshape(im, (1,100*100))
 im_sorted = numpy.sort(im_reshape[0])
@@ -115,7 +115,7 @@ print(v)
 
 # Color picture
 #im2 = Image.open('/home/donovan/CS_Class/CS696_CV/HW/ha1/set1/im01.jpg')
-im2 = cv2.imread('/Users/RJ/PycharmProjects/ComputerVision/im01.jpg')
+im2 = cv2.imread('/Users/RJ/PycharmProjects/Computer_Vision/im01.jpg')
 im2 = cv2.cvtColor(im2, cv2.COLOR_BGR2RGB)
 plt.imshow(im2)
 plt.show()
