@@ -3,16 +3,14 @@ import cv2
 import matplotlib.pyplot as plt
 
 #Get image one to show in black and white
-img1 = cv2.imread('/Users/RJ/PycharmProjects/Computer_Vision/HomeworkTwo/cat.bmp', 0)
+img1 = cv2.imread('/Users/RJ/PycharmProjects/Computer_Vision/Homework_Two/cat.bmp', 0)
 plt.imshow(img1, cmap='gray')
 plt.show()
 
-
 #Get image two to show in black and white
-img2 = cv2.imread('/Users/RJ/PycharmProjects/Computer_Vision/HomeworkTwo/dog.bmp', 0)
+img2 = cv2.imread('/Users/RJ/PycharmProjects/Computer_Vision/Homework_Two/dog.bmp', 0)
 plt.imshow(img2, cmap='gray')
 plt.show()
-
 
 #FOURIER IMAGE ONE
 #For image one we get the fourier image and display it
@@ -39,18 +37,19 @@ plt.imshow(magnitdue_spectrum_imageTwo, cmap='gray')
 plt.show()
 
 
-#IMAGE ONE GET THE LOW FILTER
-#From the fourier image one, edit it so that we can get a low frequency which is an image with a siloutte by blocking out the outside
 #Get the total # of rows/columns and the middle of both
 totalRows = np.size(img1_f, 0)
 totalColumns = np.size(img1_f,1)
 centerRows = int(totalRows/2)
 centerColumns = int(totalColumns/2)
-#Makes a completely black image
+#Play around with this number as it adjusts the size of the filter contribution of the Image One and Image Two
+n = 20
+
+#IMAGE ONE GET THE LOW FILTER
+#From the fourier image one, edit it so that we can get a low frequency which is an image with a siloutte by blocking out the outside
+#Make a completely black image
 tempFrame = np.zeros_like(img1_shift)
 #next block out everything but middle of the original fourier image i.e. crop the middle of the fourier
-#Play around with this number as it adjusts the size of the filter contribution of the image
-n = 20
 tempFrame[centerRows-n:centerRows+n, centerColumns-n:centerColumns+n] = img1_shift[centerRows - n:centerRows+n, centerColumns-n:centerColumns+n]
 #Next display the new fourier
 #DISPLAY ONLY* This is to "up" the values so you can visualize the frequency domain
