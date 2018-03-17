@@ -36,7 +36,6 @@ magnitdue_spectrum_imageTwo = 20*np.log(np.abs(img2_shift))
 plt.imshow(magnitdue_spectrum_imageTwo, cmap='gray')
 plt.show()
 
-
 #Get the total # of rows/columns and the middle of both
 totalRows = np.size(img1_f, 0)
 totalColumns = np.size(img1_f,1)
@@ -64,8 +63,6 @@ inverse_tempframe_One = np.fft.ifft2(tempFrame)
 inverse_tempframe_One_abs = np.abs(inverse_tempframe_One)
 plt.imshow(inverse_tempframe_One_abs, cmap='gray')
 plt.show()
-
-
 
 #IMAGE TWO GET THE HIGH FILTER
 #From the fourier image two, edit it so that we can get a low frequency which is an image with a siloutte by blocking out the outside
