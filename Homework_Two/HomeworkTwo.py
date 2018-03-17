@@ -42,7 +42,7 @@ totalRows = np.size(img1_f, 0)
 totalColumns = np.size(img1_f,1)
 centerRows = int(totalRows/2)
 centerColumns = int(totalColumns/2)
-#Play around with this number as it adjusts the size of the filter contribution of the Image One and Image Two
+#Play around with this number as it adjusts the size of the filter contribution of Image One and Image Two
 n = 20
 
 #IMAGE ONE GET THE LOW FILTER
