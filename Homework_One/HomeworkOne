@@ -44,7 +44,7 @@ import matplotlib.pyplot as plt
 import random
 import cv2
 
-im = cv2.imread('/Users/RJ/PycharmProjects/Computer_Vision/test.png',0)
+im = cv2.imread('/Users/RJ/PycharmProjects/Computer_Vision/Homework_One/test.png',0)
 im = cv2.resize(im, (100,100))
 im_reshape = numpy.reshape(im, (1,100*100))
 im_sorted = numpy.sort(im_reshape[0])
@@ -124,7 +124,7 @@ Tip: Use the looping over the directory from Kyles class to work this one out
 """
 # Color picture
 #This opens and gets the image to show
-im2 = cv2.imread('/Users/RJ/PycharmProjects/Computer_Vision/im01.jpg')
+im2 = cv2.imread('/Users/RJ/PycharmProjects/Computer_Vision/Homework_One/im01.jpg')
 im2 = cv2.cvtColor(im2, cv2.COLOR_BGR2RGB)
 plt.imshow(im2)
 plt.show()
