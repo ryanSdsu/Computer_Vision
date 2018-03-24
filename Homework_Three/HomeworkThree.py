@@ -45,18 +45,31 @@ plt.show()
 dtype = [('score', float), ('height', int), ('width', int)]
 maxList = []
 
+#This does the "Correlation" i.e. Q1
+#tempImage1 = np.zeros_like(img1Original)
 tempImage1 = np.zeros_like(img1Original)
+
 for heightIndex in range(hOriginal - hEye):
     for widthIndex in range(wOriginal - wEye):
         croppedImg1 = img1Original[heightIndex:hEye + heightIndex, widthIndex:wEye + widthIndex]
         flattenedCroppedImg1 = croppedImg1.flatten()
         flattenedImg1Eye = img1Eye.flatten()
         flattenedImg1Test = croppedImgTest.flatten()
+
         #This does the "Correlation" i.e. Q1
         correlationValue = pearsonr(flattenedCroppedImg1, flattenedImg1Eye)
         correlationValue = correlationValue[0] * 255
+
+
+        # #This does the "SSD" i.e. Q2
+        # correlationValue = ((flattenedCroppedImg1-flattenedImg1Eye)**2).sum()
+        # correlationValue = 1 - float(correlationValue / 31046)
+        # correlationValue = float(correlationValue * 255)
+
+
         tempImage1[heightIndex][widthIndex] = correlationValue
         maxList.append((correlationValue, heightIndex, widthIndex))
+
 
 plt.imshow(tempImage1, cmap='gray')
 plt.show()
