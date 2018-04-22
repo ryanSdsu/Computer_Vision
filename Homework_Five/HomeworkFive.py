@@ -248,23 +248,13 @@ accuracyScoreTwo = accuracy_score(FlowerMasterLabelListTestFinal,testOutput)
 print(accuracyScoreOne)
 print(accuracyScoreTwo)
 
-
 ################################################################################################################
-#Create an SVM model with the training set
-# try :clf = svm.SVC(decision_function_shape='ovo')
-# try :clf = svm.SVC(decision_function_shape='ovr')
-# try :clf = svm.Linear_svc()
+#Get the incorrect images
+for idx,label in enumerate(FlowerMasterLabelListTestFinal):
+    if FlowerMasterLabelListTestFinal[idx] != testOutput[idx]:
+        print("This image was classified as: {}. But the correct label was: {}".format(testOutput[idx],FlowerMasterLabelListTestFinal[idx]))
+        plt.imshow(FlowerMasterImageListTestFinal[idx], cmap='gray')
+        plt.show()
+        #Take a look at the petals? Maybe the Angle was wrong? Why was it not classified correctly?
+        #The HOG might be not take into account the intensity, one might be yellow and the other white?
 
-clf = svm.SVC() #Uses C=1
-clf.fit(siftImageTraining,FlowerMasterLabelListTrainingFinal)
-testOutput = clf.predict(siftImageTest)
-matrix = confusion_matrix(FlowerMasterLabelListTestFinal,testOutput)
-print(matrix)
-
-################################################################################################################
-#Find the accuracy:
-matrix = np.array(matrix)
-accuracyScoreOne = np.sum(matrix.diagonal())/np.sum(matrix)
-accuracyScoreTwo = accuracy_score(FlowerMasterLabelListTestFinal,testOutput)
-print(accuracyScoreOne)
-print(accuracyScoreTwo)
