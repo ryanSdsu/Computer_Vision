@@ -9,6 +9,7 @@ import math
 import scipy.signal
 from sklearn import svm
 from sklearn.metrics import confusion_matrix
+from sklearn.metrics import accuracy_score
 
 #Get the images (as gray ones) into the folders into three different lists
 FlowerOneList = []
@@ -226,13 +227,44 @@ siftImageTest = []
 for image in FlowerMasterImageListTestFinal:
     siftImageTest.append(sift(image))
 
+
 ################################################################################################################
 #Create an SVM model with the training set
 # try :clf = svm.SVC(decision_function_shape='ovo')
 # try :clf = svm.SVC(decision_function_shape='ovr')
 # try :clf = svm.Linear_svc()
 
-clf = svm.SVC(decision_function_shape='ovo')
+clf = svm.LinearSVC()
 clf.fit(siftImageTraining,FlowerMasterLabelListTrainingFinal)
 testOutput = clf.predict(siftImageTest)
-print(confusion_matrix(FlowerMasterLabelListTestFinal,testOutput))
+matrix = confusion_matrix(FlowerMasterLabelListTestFinal,testOutput)
+print(matrix)
+
+################################################################################################################
+#Find the accuracy:
+matrix = np.array(matrix)
+accuracyScoreOne = np.sum(matrix.diagonal())/np.sum(matrix)
+accuracyScoreTwo = accuracy_score(FlowerMasterLabelListTestFinal,testOutput)
+print(accuracyScoreOne)
+print(accuracyScoreTwo)
+
+
+################################################################################################################
+#Create an SVM model with the training set
+# try :clf = svm.SVC(decision_function_shape='ovo')
+# try :clf = svm.SVC(decision_function_shape='ovr')
+# try :clf = svm.Linear_svc()
+
+clf = svm.SVC() #Uses C=1
+clf.fit(siftImageTraining,FlowerMasterLabelListTrainingFinal)
+testOutput = clf.predict(siftImageTest)
+matrix = confusion_matrix(FlowerMasterLabelListTestFinal,testOutput)
+print(matrix)
+
+################################################################################################################
+#Find the accuracy:
+matrix = np.array(matrix)
+accuracyScoreOne = np.sum(matrix.diagonal())/np.sum(matrix)
+accuracyScoreTwo = accuracy_score(FlowerMasterLabelListTestFinal,testOutput)
+print(accuracyScoreOne)
+print(accuracyScoreTwo)
