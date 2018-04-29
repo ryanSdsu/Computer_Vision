@@ -47,12 +47,12 @@ print(gdTwo)
 #Crop the region
 #crop imgOne with gdOne
 #The width and height are from gd[0,1]
-croppedImg1 = cupImgOneGray[279:362, 226:331]
+croppedImg1 = cupImgOneGray[279:362, 226:311]
 plt.imshow(croppedImg1, cmap='gray')
 plt.show()
 
 #crop imgTwo with gdOne
-croppedImg2 = cupImgTwoGray[279:362, 226:331]
+croppedImg2 = cupImgTwoGray[279:362, 226:311]
 plt.imshow(croppedImg2, cmap='gray')
 plt.show()
 
@@ -92,7 +92,7 @@ plt.imshow(non_max_One, cmap='gray')
 plt.show()
 
 #Return the reduced number of Harris corners for img two
-non_max_Two = non_maxima(cupImgTwoHarrisCorner, width=3)
+non_max_Two = non_maxima(cupImgTwoHarrisCorner, width=2)
 plt.imshow(non_max_Two, cmap='gray')
 plt.show()
 
@@ -229,7 +229,7 @@ def harrisCornerRegionOnOriginalImage(croppedCupImg, harrisCornerList):
     harrisHistogramList = []
     harrisCoordinatesList = []
     #You can edit the bordersize here
-    borderSize = 8
+    borderSize = 16
     borderedImg = cv2.copyMakeBorder(croppedCupImg, borderSize, borderSize, borderSize, borderSize, cv2.BORDER_CONSTANT, value=0)
 
     for idx, i in enumerate(harrisCornerList):
@@ -258,8 +258,8 @@ def harrisCornerRegionOnOriginalImage(croppedCupImg, harrisCornerList, boundingB
     harrisCornerValue = 20
     for idx, i in enumerate(harrisCornerList):
         if idx < harrisCornerValue and harrisCornerList[idx][0] > 10:
-            x = harrisCornerList[idx][1] + np.int(boundingBox[0,1])
-            y = harrisCornerList[idx][2] + np.int(boundingBox[0,0])
+            x = harrisCornerList[idx][1] + np.int(boundingBox[0,0])
+            y = harrisCornerList[idx][2] + np.int(boundingBox[0,1])
             harrisCornerRegion = borderedImg[x:x+2*borderSize, y:y+2*borderSize]
             # plt.imshow(harrisCornerRegion, cmap='gray')
             # plt.show()
@@ -269,8 +269,11 @@ def harrisCornerRegionOnOriginalImage(croppedCupImg, harrisCornerList, boundingB
 
     return harrisHistogramList, np.array(harrisCoordinatesList)
 
-harrisHistogramListImgOne, harrisCoordinatesNpArrayImgOne = harrisCornerRegionOnOriginalImage(cupImgOneGray, harrisCornerListOne, gdOne)
-harrisHistogramListImgTwo, harrisCoordinatesNpArrayImgTwo = harrisCornerRegionOnOriginalImage(cupImgTwoGray, harrisCornerListTwo, gdOne)
+gdOneTest = gdOne[:,::-1]
+
+
+harrisHistogramListImgOne, harrisCoordinatesNpArrayImgOne = harrisCornerRegionOnOriginalImage(cupImgOneGray, harrisCornerListOne, gdOneTest)
+harrisHistogramListImgTwo, harrisCoordinatesNpArrayImgTwo = harrisCornerRegionOnOriginalImage(cupImgTwoGray, harrisCornerListTwo, gdOneTest)
 
 #Note to self: the cropped image of the cup from the seq1.mat has a border on it now and thus loses information
 #This however is Ok, because we have the majority of the harris corners from the actual cup itself
@@ -284,6 +287,7 @@ def histogramCompare(harrisHistogramListOne, harrisHistogramListTwo):
     #However be careful with the equations and making sure that they are operating correctly
     #Example for Euclidean we want the minimum distance but with Correlation we want the max (check this!)
     similarityMatrix = pairwise_distances(harrisHistogramListOne,harrisHistogramListTwo, metric='euclidean')
+    print(np.shape(similarityMatrix))
     #Now we want to sort the distances according to their indexs
     #The main goal is to find for each of the histograms which is simlar in frame 1 to frame 2
     #The output is the index of the histograms but with the best matches for the two lists in a np array
@@ -317,9 +321,22 @@ print(transformation)
 
 #Now we can test it by applying the transformation to the bounding box i.e. the cropped cup from seq1.mat i.e. gd[0,0]
 gdOneTest = gd[0,0]
+gdOneTest = gdOneTest[:,::-1]
+
+print(gdOneTest)
 
 gdTwoTest = gdOneTest.dot(transformation)
+gdTwoTest = gdTwoTest.astype(int)
 #After applying the dot product of the transformation to gdOne
 #It should look as close to gdTwo as possible
 print(gdTwoTest)
-print(gdTwoTest - gdTwo)
+
+#This should be as close to 0 as possible
+print(gdTwoTest - gdTwo[:,::-1])
+
+# #To display the rectangle of where the cup js
+cv2.rectangle(cupImgTwoOriginal, tuple(gdTwoTest[0,:]),tuple(gdTwoTest[1,:]), (0,255,0), 3)
+plt.imshow(cupImgTwoOriginal)
+plt.show()
+
+#This can be modified with regards to accuracy by affecting the harris corners 258, the border 255 and number of bins 175
