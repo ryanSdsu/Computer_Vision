@@ -2,8 +2,10 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 from scipy.io import loadmat
+from sklearn.metrics.pairwise import pairwise_distances
 import scipy.signal
 import math
+from scipy.linalg import solve
 
 imgDir = '/Users/RJ/Desktop/Computer Vision/ha6/seq1';
 startNumberOne = '000184'
@@ -44,6 +46,7 @@ print(gdTwo)
 
 #Crop the region
 #crop imgOne with gdOne
+#The width and height are from gd[0,1]
 croppedImg1 = cupImgOneGray[279:362, 226:331]
 plt.imshow(croppedImg1, cmap='gray')
 plt.show()
@@ -99,9 +102,11 @@ plt.show()
 #In other words returning a triple with 3 values => (Harris Value, height coordinate, wigth coordinate)
 def getHarrisCoordinatesandValues(refinedHarris):
     harrisValuesandCoordinates = []
+    harrisMax = np.amax(refinedHarris)
     for heightIndex in range(refinedHarris.shape[0]):
         for widthIndex in range(refinedHarris.shape[1]):
-            harrisValue = refinedHarris[heightIndex][widthIndex]
+            #Be sure to normalize the values
+            harrisValue = refinedHarris[heightIndex][widthIndex]/harrisMax*255
             harrisValuesandCoordinates.append((harrisValue, heightIndex, widthIndex))
 
     harrisValuesandCoordinates = sorted(harrisValuesandCoordinates, key=lambda l:l[0], reverse=True)
@@ -166,7 +171,8 @@ def Hog(image):
 
     #Because numberOfBuckets is 4 we have 4 elements which will be constantly changing in the histogram
     #histogram[0] is [-180 => -90], histogram[1] is [-89 => 0], histogram[2] is [0 => 90], histogram[3] is [91=>180]
-    numberOfBins = 12
+    #You can change the number of bins here
+    numberOfBins = 8
     binRange = 360 / numberOfBins
     histogram = [0] * numberOfBins
 
@@ -219,25 +225,101 @@ def reorderHistogramLargestInFront(histogram):
 #Get the height and width of the cub image
 #This returns a new list
 #a triple with 3 values => (height coordinate, wigth coordinate, hog histogram)
-def harrisCornerRegion(harrisImg,harrisCornerList):
-    harrisCoordinatesAndHistogram = []
-
-    borderedImg = cv2.copyMakeBorder(harrisImg,8,8,8,8,cv2.BORDER_CONSTANT,value=0)
+def harrisCornerRegionOnOriginalImage(croppedCupImg, harrisCornerList):
+    harrisHistogramList = []
+    harrisCoordinatesList = []
+    #You can edit the bordersize here
+    borderSize = 8
+    borderedImg = cv2.copyMakeBorder(croppedCupImg, borderSize, borderSize, borderSize, borderSize, cv2.BORDER_CONSTANT, value=0)
 
     for idx, i in enumerate(harrisCornerList):
-        harrisCornerRegion = borderedImg[harrisCornerList[idx][1]-8:harrisCornerList[idx][1]+8, harrisCornerList[idx][2]-8:harrisCornerList[idx][2]+8]
-        print(harrisCornerRegion.shape)
-        plt.imshow(harrisCornerRegion, cmap='gray')
-        plt.show()
-        histogramOfHarrisRegion = reorderHistogramLargestInFront(Hog(harrisCornerRegion))
-        harrisCoordinatesAndHistogram.append((harrisCornerList[idx][1], harrisCornerList[idx][2], histogramOfHarrisRegion))
+        if idx < 50 and harrisCornerList[idx][0] > 10:
+            x = harrisCornerList[idx][1]
+            y = harrisCornerList[idx][2]
+            harrisCornerRegion = borderedImg[x:x+2*borderSize, y:y+2*borderSize]
+            # plt.imshow(harrisCornerRegion, cmap='gray')
+            # plt.show()
+            histogramOfHarrisRegion = reorderHistogramLargestInFront(Hog(harrisCornerRegion))
+            harrisHistogramList.append(histogramOfHarrisRegion)
+            harrisCoordinatesList.append((harrisCornerList[idx][1], harrisCornerList[idx][2]))
 
-    return harrisCoordinatesAndHistogram
-
-harrisCoordinatesAndHistogramOne = harrisCornerRegion(non_max_One,harrisCornerListOne)
-harrisCoordinatesAndHistogramTwo = harrisCornerRegion(non_max_Two,harrisCornerListTwo)
-
-for i in range(9):
-    print(harrisCornerListOne[i])
+    return harrisHistogramList, np.array(harrisCoordinatesList)
 
 
+
+#This definition is for cropping and getting the histograms/coordinates form the "ORIGINAL" image
+def harrisCornerRegionOnOriginalImage(croppedCupImg, harrisCornerList, boundingBox):
+    harrisHistogramList = []
+    harrisCoordinatesList = []
+
+    borderSize = 8
+    borderedImg = cv2.copyMakeBorder(croppedCupImg, borderSize, borderSize, borderSize, borderSize, cv2.BORDER_CONSTANT, value=0)
+    #You can set the number of harris corners here
+    harrisCornerValue = 20
+    for idx, i in enumerate(harrisCornerList):
+        if idx < harrisCornerValue and harrisCornerList[idx][0] > 10:
+            x = harrisCornerList[idx][1] + np.int(boundingBox[0,1])
+            y = harrisCornerList[idx][2] + np.int(boundingBox[0,0])
+            harrisCornerRegion = borderedImg[x:x+2*borderSize, y:y+2*borderSize]
+            # plt.imshow(harrisCornerRegion, cmap='gray')
+            # plt.show()
+            histogramOfHarrisRegion = reorderHistogramLargestInFront(Hog(harrisCornerRegion))
+            harrisHistogramList.append(histogramOfHarrisRegion)
+            harrisCoordinatesList.append((harrisCornerList[idx][1], harrisCornerList[idx][2]))
+
+    return harrisHistogramList, np.array(harrisCoordinatesList)
+
+harrisHistogramListImgOne, harrisCoordinatesNpArrayImgOne = harrisCornerRegionOnOriginalImage(cupImgOneGray, harrisCornerListOne, gdOne)
+harrisHistogramListImgTwo, harrisCoordinatesNpArrayImgTwo = harrisCornerRegionOnOriginalImage(cupImgTwoGray, harrisCornerListTwo, gdOne)
+
+#Note to self: the cropped image of the cup from the seq1.mat has a border on it now and thus loses information
+#This however is Ok, because we have the majority of the harris corners from the actual cup itself
+#This is extra but is defintely something to consider
+
+#This definition compares two histograms and determines whether or not they are similar
+def histogramCompare(harrisHistogramListOne, harrisHistogramListTwo):
+
+    #Here we are creating a matrix of pairwise differences
+    #You can apply different equations with the "metric" argument or others
+    #However be careful with the equations and making sure that they are operating correctly
+    #Example for Euclidean we want the minimum distance but with Correlation we want the max (check this!)
+    similarityMatrix = pairwise_distances(harrisHistogramListOne,harrisHistogramListTwo, metric='euclidean')
+    #Now we want to sort the distances according to their indexs
+    #The main goal is to find for each of the histograms which is simlar in frame 1 to frame 2
+    #The output is the index of the histograms but with the best matches for the two lists in a np array
+    indexMatchedNpArray = np.argmin(similarityMatrix, axis=1)
+
+    return indexMatchedNpArray
+
+#This output has the np array of "indexes" (2nd list) for minimum distances in terms of the histograms
+#So it is where the the histograms are matching the most for both images in respect to Img One
+#Remember the histograms match based on how closely they compare and have no differences
+histogramMatchesInRespectToImgOne = histogramCompare(harrisHistogramListImgOne,harrisHistogramListImgTwo)
+
+#########################################################################################################
+#Now we are trying to get the transformation matrix, in other words did the object move and where
+#This is done with the equation Ax=B, where A is the coordinates of the harris corners for list One
+#And B is the coordinates of the harris corners for list Two
+#You can do use the built in function "solve" or the formla x=(A^T * A)^-1 * A^T * B where T is transpose and -1 is matrix inverse
+
+harrisCoordinatesListImgTwoReordered = harrisCoordinatesNpArrayImgTwo[histogramMatchesInRespectToImgOne, :]
+
+def closeForm(A,B):
+    transform = np.transpose(A).dot(A)
+    transform = np.linalg.inv(transform)
+    transform = transform.dot(np.transpose(A))
+    transform = transform.dot(B)
+    return transform
+
+transformation = closeForm(harrisCoordinatesNpArrayImgOne,harrisCoordinatesListImgTwoReordered)
+print(transformation)
+
+
+#Now we can test it by applying the transformation to the bounding box i.e. the cropped cup from seq1.mat i.e. gd[0,0]
+gdOneTest = gd[0,0]
+
+gdTwoTest = gdOneTest.dot(transformation)
+#After applying the dot product of the transformation to gdOne
+#It should look as close to gdTwo as possible
+print(gdTwoTest)
+print(gdTwoTest - gdTwo)
