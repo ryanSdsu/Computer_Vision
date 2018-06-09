@@ -1,5 +1,7 @@
 from random import *
 import numpy as np
+from numpy import zeros
+import os
 
 #Q1.2
 #random permutations, shuffle the array
@@ -44,51 +46,49 @@ import matplotlib.pyplot as plt
 import random
 import cv2
 
-im = cv2.imread('/Users/RJ/PycharmProjects/Computer_Vision/Homework_One/test.png',0)
-im = cv2.resize(im, (100,100))
-im_reshape = numpy.reshape(im, (1,100*100))
-im_sorted = numpy.sort(im_reshape[0])
-plt.plot(im_sorted)
+imageOne = cv2.imread('/Users/RJ/PycharmProjects/Computer_Vision/Homework_One/test.png', 0)
+imageOne = cv2.resize(imageOne, (100, 100))
+imageOne_reshape = numpy.reshape(imageOne, (1, 100 * 100))
+imageOne_sorted = numpy.sort(imageOne_reshape[0])
+plt.plot(imageOne_sorted)
 plt.show()
 
 #Part B
-plt.hist(im_sorted, bins=32)
+plt.hist(imageOne_sorted, bins=32)
 plt.show()
 
 #Part C
-thres = 123
-print( im )
-plt.imshow(im, cmap='gray')
+threshold = 123
+print(imageOne)
+plt.imshow(imageOne, cmap='gray')
 plt.show()
 
-im_binary = numpy.array(im, copy=True)
-for i in range(len(im[0])):
-    for j in range(len(im)):
-        if im[i][j] > thres:
-            im_binary[i][j] = 255
+binaryImage = numpy.array(imageOne, copy=True)
+for i in range(len(imageOne[0])):
+    for j in range(len(imageOne)):
+        if imageOne[i][j] > threshold:
+            binaryImage[i][j] = 255
         else:
-            im_binary[i][j] = 0
+            binaryImage[i][j] = 0
 
-plt.imshow(im_binary, cmap='gray')
+plt.imshow(binaryImage, cmap='gray')
 plt.show()
 
 #Part D
-mean_A = numpy.mean(im_reshape)
-print(mean_A)
-im_mean = im-mean_A
-print(im_mean)
-for i in range(len(im_mean[0])):
-    for j in range(len(im_mean)):
-        if im_mean[i][j] < 0:
-            im_mean[i][j] = 0
+mean_A = numpy.mean(imageOne_reshape)
+image_mean = imageOne - mean_A
+for i in range(len(image_mean[0])):
+    for j in range(len(image_mean)):
+        if image_mean[i][j] < 0:
+            image_mean[i][j] = 0
 
-plt.imshow(im_mean, cmap='gray')
+plt.imshow(image_mean, cmap='gray')
 plt.show()
 
 #Part E
 die_side = range(1,7)
 roll = random.choice(die_side)
-print(roll)
+print("The random roll is: {}".format(roll))
 
 #Part F
 y = range(1,7)
@@ -96,17 +96,17 @@ z = map(list, zip(*[iter(y)]*3))
 print(list(z))
 
 #Part G
-temp_min = 9999
-row = 0
-col = 0
-for i in range(len(im)):
-    for j in range(len(im[0])):
-        if im[i][j] < temp_min:
-            temp_min = im[i][j]
-            row = i
-            col = j
+x = 9999
+r = 0
+c = 0
+for i in range(len(imageOne)):
+    for j in range(len(imageOne[0])):
+        if imageOne[i][j] < x:
+            x = imageOne[i][j]
+            r = i
+            c = j
 
-print("min value: {} at {},{}".format(temp_min,row,col))
+print("min value: {} at {},{}".format(x, r, c))
 
 #Part H
 v = [1, 8 ,8 ,2, 1, 3, 9, 8]
@@ -122,35 +122,95 @@ Do this for both the grayscale and the RGB.
 
 Tip: Use the looping over the directory from Kyles class to work this one out
 """
-# Color picture
-#This opens and gets the image to show
-im2 = cv2.imread('/Users/RJ/PycharmProjects/Computer_Vision/Homework_One/im01.jpg')
-im2 = cv2.cvtColor(im2, cv2.COLOR_BGR2RGB)
-plt.imshow(im2)
+
+#Color Avg
+directoryInString ="/Users/RJ/PycharmProjects/Computer_Vision/Homework_One/Images"
+directory = os.fsencode(directoryInString)
+
+totalAvg = 0
+rAvg =  zeros((100,100))
+gAvg =  zeros((100,100))
+bAvg =  zeros((100,100))
+
+numberOfFrames = 0
+for file in os.listdir(directory):
+    filename = os.fsdecode(file)
+    if filename.endswith(".png"):
+        filename = directoryInString + "/" + filename
+        image = cv2.imread(filename)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        image = cv2.resize(image, (100,100))
+
+        plt.imshow(image)
+        plt.show()
+
+        rImage = image[:,:,0]
+        gImage = image[:,:,1]
+        bImage = image[:,:,2]
+
+        for i in range(len(rImage[0])):
+            for j in range(len(rImage)):
+                rAvg[i][j] += rImage[i][j]
+
+        for i in range(len(gImage[0])):
+            for j in range(len(gImage)):
+                gAvg[i][j] += gImage[i][j]
+
+        for i in range(len(bImage[0])):
+            for j in range(len(bImage)):
+                bAvg[i][j] += bImage[i][j]
+
+        numberOfFrames += 1
+        continue
+
+rAvg = rAvg / numberOfFrames
+gAvg = gAvg / numberOfFrames
+bAvg = bAvg / numberOfFrames
+
+rAvg = rAvg.astype(np.uint8)
+gAvg = gAvg.astype(np.uint8)
+bAvg = bAvg.astype(np.uint8)
+
+im3 = cv2.merge((rAvg,gAvg,bAvg))
+plt.imshow(im3)
 plt.show()
 
-#This resizes the image
-im2 = cv2.resize(im2, (100,100))
-plt.imshow(im2)
+
+#Black and White Avg
+directoryInString ="/Users/RJ/PycharmProjects/Computer_Vision/Homework_One/Images"
+directory = os.fsencode(directoryInString)
+
+totalAvg = 0
+blackAndWhiteAvg =  zeros((100,100))
+
+numberOfFrames = 0
+for file in os.listdir(directory):
+    filename = os.fsdecode(file)
+    if filename.endswith(".png"):
+        filename = directoryInString + "/" + filename
+        image = cv2.imread(filename)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        image = cv2.resize(image, (100,100))
+        plt.imshow(image, cmap='gray')
+        plt.show()
+
+        blackAndWhiteImage = numpy.array(image, copy=True)
+
+        for i in range(len(image[0])):
+            for j in range(len(image)):
+                blackAndWhiteAvg[i][j] += image[i][j]
+
+        print(blackAndWhiteAvg)
+
+        numberOfFrames += 1
+        continue
+
+blackAndWhiteAvg = blackAndWhiteAvg / numberOfFrames
+
+blackAndWhiteAvg = blackAndWhiteAvg.astype(np.uint8)
+
+plt.imshow(blackAndWhiteAvg, cmap='gray')
 plt.show()
 
-#This gets the RGB which needs to be stored globally in three separete variables
-#They need to be compounded via their avg and the number of frames
-print(im2.shape)
-R = im2[:,:,0]
-G = im2[:,:,1]
-B = im2[:,:,2]
-print(R.shape)
-print(G.shape)
-print(B.shape)
-
-#Code to take the average of R, G, and B
-#insert code here
-
-#Once the code is written, here we merge the avgs of all 3 (RBG) together to make one picture
-im3 = cv2.merge((R,G,B))
-print(im3.shape)
-
-#Print the picture
-plt.imshow(im2)
-plt.show()
+#https://stackoverflow.com/questions/25910050/perform-local-standard-deviation-in-python
+#Black and White Avg
