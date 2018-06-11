@@ -194,8 +194,6 @@ for file in os.listdir(directory):
         plt.imshow(image, cmap='gray')
         plt.show()
 
-        blackAndWhiteImage = numpy.array(image, copy=True)
-
         for i in range(len(image[0])):
             for j in range(len(image)):
                 blackAndWhiteAvg[i][j] += image[i][j]
@@ -212,5 +210,62 @@ blackAndWhiteAvg = blackAndWhiteAvg.astype(np.uint8)
 plt.imshow(blackAndWhiteAvg, cmap='gray')
 plt.show()
 
+
+
 #https://stackoverflow.com/questions/25910050/perform-local-standard-deviation-in-python
-#Black and White Avg
+#Standard Deviation
+
+#First step is to make 2 frames (mean and std) that will hold everything and is the same size as the default images and N
+directoryInString ="/Users/RJ/PycharmProjects/Computer_Vision/Homework_One/Images"
+directory = os.fsencode(directoryInString)
+
+numberOfFrames = 0
+blackAndWhiteMean =  zeros((100,100))
+blackAndWhiteStd =  zeros((100,100))
+
+
+#The Next step is to populate one of the frames so that it has the mean of every single pixel added together
+for file in os.listdir(directory):
+    filename = os.fsdecode(file)
+    if filename.endswith(".png"):
+        filename = directoryInString + "/" + filename
+        image = cv2.imread(filename)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        image = cv2.resize(image, (100,100))
+
+        for i in range(len(image[0])):
+            for j in range(len(image)):
+                blackAndWhiteMean[i][j] += image[i][j]
+
+        numberOfFrames += 1
+        continue
+
+blackAndWhiteMean = blackAndWhiteMean / numberOfFrames
+
+#Then loop through every image again and at each pixel subtract the mean from the pixel, square it and add it to the other frame cummuatively
+for file in os.listdir(directory):
+    filename = os.fsdecode(file)
+    if filename.endswith(".png"):
+        filename = directoryInString + "/" + filename
+        image = cv2.imread(filename)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        image = cv2.resize(image, (100,100))
+
+        for i in range(len(image[0])):
+            for j in range(len(image)):
+                blackAndWhiteStd[i][j] = (image[i][j] - blackAndWhiteMean[i][j]) ** 2
+        continue
+
+#From there divide each pixel by N
+blackAndWhiteStd = blackAndWhiteStd / numberOfFrames
+
+#Build the image
+blackAndWhiteStd = blackAndWhiteStd.astype(np.uint8)
+
+print(blackAndWhiteStd)
+
+print(blackAndWhiteStd.shape)
+plt.imshow(blackAndWhiteStd, cmap='gray')
+plt.show()
+
+
