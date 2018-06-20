@@ -106,27 +106,7 @@ and then just divide by 2 i.e. "finalImgB = finalImgB / 2"
 
 From here merge them together (finalImgB, finalImgG, finalImgR) to create a blended image!
 """
-def imageBlender (lowFilterImageUrl, sizeOfLowFilter, highFilterImageUrl, sizeOfHighFilter):
-
-    lowFilterImage = cv2.imread(lowFilterImageUrl)
-    lowFilterImage = cv2.cvtColor(lowFilterImage, cv2.COLOR_BGR2RGB)
-
-    # plt.imshow(lowFilterImage)
-    # plt.show()
-
-    highFilterImage = cv2.imread(highFilterImageUrl)
-    highFilterImage = cv2.cvtColor(highFilterImage, cv2.COLOR_BGR2RGB)
-
-    # plt.imshow(highFilterImage)
-    # plt.show()
-
-    redLowFilterImageOriginal = lowFilterImage[:,:,0]
-    greenLowFilterImageOriginal = lowFilterImage[:,:,1]
-    blueLowFilterImageOriginal = lowFilterImage[:,:,2]
-
-    redHighFilterImageOriginal = highFilterImage[:,:,0]
-    greenHighFilterImageOriginal = highFilterImage[:,:,1]
-    blueHighFilterImageOriginal = highFilterImage[:,:,2]
+def my_filter (lowFilterImageUrl, sizeOfLowFilter, highFilterImageUrl, sizeOfHighFilter, colorOrGray):
 
     def lowFilterTransform(image):
         #FOURIER IMAGE
@@ -146,10 +126,6 @@ def imageBlender (lowFilterImageUrl, sizeOfLowFilter, highFilterImageUrl, sizeOf
         inverse_tempframe_One = np.fft.ifft2(tempFrame)
         inverse_tempframe_One_abs = np.abs(inverse_tempframe_One)
         return inverse_tempframe_One_abs
-
-    redLowFilterImage = lowFilterTransform(redLowFilterImageOriginal)
-    greenLowFilterImage = lowFilterTransform(greenLowFilterImageOriginal)
-    blueLowFilterImage = lowFilterTransform(blueLowFilterImageOriginal)
 
     def highFilterTransform(image):
         #FOURIER IMAGE
@@ -172,24 +148,70 @@ def imageBlender (lowFilterImageUrl, sizeOfLowFilter, highFilterImageUrl, sizeOf
         inverse_tempframe_Two_abs = np.abs(inverse_tempframe_Two)
         return inverse_tempframe_Two_abs
 
-    redHighFilterImage = highFilterTransform(redHighFilterImageOriginal)
-    greenHighFilterImage = highFilterTransform(greenHighFilterImageOriginal)
-    blueHighFilterImage = highFilterTransform(blueHighFilterImageOriginal)
+    if colorOrGray == "color":
+        lowFilterImage = cv2.imread(lowFilterImageUrl)
+        lowFilterImage = cv2.cvtColor(lowFilterImage, cv2.COLOR_BGR2RGB)
 
-    rBlend = (redLowFilterImage + redHighFilterImage) / 2
-    gBlend = (greenLowFilterImage + greenHighFilterImage) / 2
-    bBlend = (blueLowFilterImage + blueHighFilterImage) / 2
+        # plt.imshow(lowFilterImage)
+        # plt.show()
 
-    rBlend = rBlend.astype(np.uint8)
-    gBlend = gBlend.astype(np.uint8)
-    bBlend = bBlend.astype(np.uint8)
+        highFilterImage = cv2.imread(highFilterImageUrl)
+        highFilterImage = cv2.cvtColor(highFilterImage, cv2.COLOR_BGR2RGB)
 
-    im3 = cv2.merge((rBlend,gBlend,bBlend))
+        # plt.imshow(highFilterImage)
+        # plt.show()
 
-    plt.imshow(im3)
-    plt.show()
+        redLowFilterImageOriginal = lowFilterImage[:,:,0]
+        greenLowFilterImageOriginal = lowFilterImage[:,:,1]
+        blueLowFilterImageOriginal = lowFilterImage[:,:,2]
+
+        redHighFilterImageOriginal = highFilterImage[:,:,0]
+        greenHighFilterImageOriginal = highFilterImage[:,:,1]
+        blueHighFilterImageOriginal = highFilterImage[:,:,2]
+
+        redLowFilterImage = lowFilterTransform(redLowFilterImageOriginal)
+        greenLowFilterImage = lowFilterTransform(greenLowFilterImageOriginal)
+        blueLowFilterImage = lowFilterTransform(blueLowFilterImageOriginal)
+
+        redHighFilterImage = highFilterTransform(redHighFilterImageOriginal)
+        greenHighFilterImage = highFilterTransform(greenHighFilterImageOriginal)
+        blueHighFilterImage = highFilterTransform(blueHighFilterImageOriginal)
+
+        rBlend = (redLowFilterImage + redHighFilterImage) / 2
+        gBlend = (greenLowFilterImage + greenHighFilterImage) / 2
+        bBlend = (blueLowFilterImage + blueHighFilterImage) / 2
+
+        rBlend = rBlend.astype(np.uint8)
+        gBlend = gBlend.astype(np.uint8)
+        bBlend = bBlend.astype(np.uint8)
+
+        im3 = cv2.merge((rBlend,gBlend,bBlend))
+
+        plt.imshow(im3)
+        plt.show()
+
+    elif colorOrGray == "gray":
+
+        lowFilterImage = cv2.imread(lowFilterImageUrl)
+        lowFilterImage = cv2.cvtColor(lowFilterImage, cv2.COLOR_BGR2GRAY)
+
+        highFilterImage = cv2.imread(highFilterImageUrl)
+        highFilterImage = cv2.cvtColor(highFilterImage, cv2.COLOR_BGR2GRAY)
+
+        lowFilterImage = lowFilterTransform(lowFilterImage)
+        highFilterImage = highFilterTransform(highFilterImage)
+
+        grayBlend = (lowFilterImage + highFilterImage) / 2
+
+        grayBlend = grayBlend.astype(np.uint8)
+
+        plt.imshow(grayBlend, cmap='gray')
+        plt.show()
 
     return
 
-imageBlender("/Users/RJ/PycharmProjects/Computer_Vision/Homework_Two/cat.bmp", 150,
-             "/Users/RJ/PycharmProjects/Computer_Vision/Homework_Two/dog.bmp", 200)
+my_filter("/Users/RJ/PycharmProjects/Computer_Vision/Homework_Two/cat.bmp", 150,
+             "/Users/RJ/PycharmProjects/Computer_Vision/Homework_Two/dog.bmp", 200, "color")
+
+my_filter("/Users/RJ/PycharmProjects/Computer_Vision/Homework_Two/cat.bmp", 150,
+          "/Users/RJ/PycharmProjects/Computer_Vision/Homework_Two/dog.bmp", 200, "gray")
