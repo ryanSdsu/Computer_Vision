@@ -81,7 +81,7 @@ def correlation(originalImage, croppedImage):
 
     print(a[-1])
 
-def ssd(originalImage, croppedImage):
+def sumSquareDifference(originalImage, croppedImage):
     #Get image one to show in black and white
     img1Original = cv2.imread(originalImage, 0)
 
@@ -140,5 +140,5 @@ def ssd(originalImage, croppedImage):
 correlation("/Users/RJ/PycharmProjects/Computer_Vision/Homework_Three/image1.jpg",
             "/Users/RJ/PycharmProjects/Computer_Vision/Homework_Three/image1Eye.jpg")
 
-ssd("/Users/RJ/PycharmProjects/Computer_Vision/Homework_Three/image1.jpg",
+sumSquareDifference("/Users/RJ/PycharmProjects/Computer_Vision/Homework_Three/image1.jpg",
             "/Users/RJ/PycharmProjects/Computer_Vision/Homework_Three/image1Eye.jpg")
