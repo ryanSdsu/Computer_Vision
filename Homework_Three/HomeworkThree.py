@@ -4,9 +4,8 @@ import matplotlib.pyplot as plt
 from scipy import signal
 from scipy.stats.stats import pearsonr
 
-
-
-def correlation(originalImage, croppedImage):
+def builtInCorrelation(originalImage, croppedImage):
+    print("Data for builtInCorrelation...")
     #Get image one to show in black and white
     img1Original = cv2.imread(originalImage, 0)
     plt.imshow(img1Original, cmap='gray')
@@ -28,6 +27,33 @@ def correlation(originalImage, croppedImage):
     croppedImg1 = img1Original[0:hEye, 0:wEye]
     plt.imshow(croppedImg1, cmap='gray')
     plt.show()
+
+    #This is an auto built function which grabs the correlation through cv2 and is what we're tring to get
+    cor = cv2.matchTemplate(img1Original,img1Eye,cv2.TM_CCORR_NORMED)
+    minValue, maxValue, minLocation, maxLocation = cv2.minMaxLoc(cor)
+    print("Location of cor eye height: {}".format(maxLocation[0]))
+    print("Location of cor eye width: {}".format(maxLocation[1]))
+    plt.imshow(cor, cmap='gray')
+    plt.show()
+
+def correlation(originalImage, croppedImage):
+    print("\n")
+    print("Data for correlation...")
+    #Get image one to show in black and white
+    img1Original = cv2.imread(originalImage, 0)
+
+    #Get image one w/ eye to show in black and white
+    img1Eye = cv2.imread(croppedImage, 0)
+
+    #Get the height and width of the eye image as well as the original
+    hEye, wEye = img1Eye.shape
+    hOriginal, wOriginal = img1Original.shape
+
+    print("Size of cropped eye height: {}".format(hEye))
+    print("Size of cropped eye width: {}".format(wEye))
+
+    #This gets the cropped size of the original image and grabs via the eye
+    croppedImg1 = img1Original[0:hEye, 0:wEye]
 
     #This is an auto built function which grabs the correlation through cv2 and is what we're tring to get
     # cor = cv2.matchTemplate(img1Original,img1Eye,cv2.TM_CCORR_NORMED)
@@ -82,6 +108,8 @@ def correlation(originalImage, croppedImage):
     print(a[-1])
 
 def sumSquareDifference(originalImage, croppedImage):
+    print("\n")
+    print("Data for sumSquareDifference...")
     #Get image one to show in black and white
     img1Original = cv2.imread(originalImage, 0)
 
@@ -136,6 +164,9 @@ def sumSquareDifference(originalImage, croppedImage):
     a = np.sort(a, order = "score")
 
     print(a[-1])
+
+builtInCorrelation("/Users/RJ/PycharmProjects/Computer_Vision/Homework_Three/image1.jpg",
+            "/Users/RJ/PycharmProjects/Computer_Vision/Homework_Three/image1Eye.jpg")
 
 correlation("/Users/RJ/PycharmProjects/Computer_Vision/Homework_Three/image1.jpg",
             "/Users/RJ/PycharmProjects/Computer_Vision/Homework_Three/image1Eye.jpg")
