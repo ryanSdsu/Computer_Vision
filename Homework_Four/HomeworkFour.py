@@ -169,6 +169,7 @@ def cropOriginalImageIntoFourImageswithHarrisHistograms(image, harrisCoordinates
     harrisFrame = np.zeros([32,32])
     hEye, wEye = harrisFrame.shape
     harrisAppendedHistograms = []
+    harrisCoordinatesKey = []
 
     #Iterate through each Harris Corner
     for harrisCorner in harrisCoordinates:
@@ -201,14 +202,19 @@ def cropOriginalImageIntoFourImageswithHarrisHistograms(image, harrisCoordinates
                     histogramImage.append(value)
 
                 harrisAppendedHistograms.append(histogramImage)
+                harrisCoordinatesKey.append(harrisCorner)
 
-    return harrisAppendedHistograms
+    return harrisAppendedHistograms, harrisCoordinatesKey
 
-imageOneHarrisHistograms = cropOriginalImageIntoFourImageswithHarrisHistograms('/Users/RJ/PycharmProjects/Computer_Vision/Homework_Four/NotreDame.jpg' , imageOneHarrisCoordinates)
-imageTwoHarrisHistograms = cropOriginalImageIntoFourImageswithHarrisHistograms('/Users/RJ/PycharmProjects/Computer_Vision/Homework_Four/NotreDame.jpg' , imageTwoHarrisCoordinates)
+#Here we now have the Harris Corner Histograms (each img cropped into 4) and their respective coordiantes
+imageOneHarrisHistograms, imageOneHarrisCoordinates  = cropOriginalImageIntoFourImageswithHarrisHistograms('/Users/RJ/PycharmProjects/Computer_Vision/Homework_Four/NotreDame.jpg' , imageOneHarrisCoordinates)
+imageTwoHarrisHistograms, imageTwoHarrisCoordinates = cropOriginalImageIntoFourImageswithHarrisHistograms('/Users/RJ/PycharmProjects/Computer_Vision/Homework_Four/NotreDame.jpg' , imageTwoHarrisCoordinates)
 
-print(imageOneHarrisHistograms)
-print(imageTwoHarrisHistograms)
+print(len(imageOneHarrisHistograms))
+print(len(imageOneHarrisCoordinates))
+
+print(len(imageTwoHarrisHistograms))
+print(len(imageTwoHarrisCoordinates))
 
 ########Creating the HOG END############
 
