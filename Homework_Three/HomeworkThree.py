@@ -4,6 +4,10 @@ import matplotlib.pyplot as plt
 from scipy import signal
 from scipy.stats.stats import pearsonr
 
+# https://stackoverflow.com/questions/6991471/computing-cross-correlation-function
+# Use the cv match template for the built in functions
+# cv.MatchTemplate(templateCv, imageCv, resultCv, cv.CV_TM_CCORR_NORMED)
+
 def builtInCorrelation(originalImage, croppedImage):
     print("Data for builtInCorrelation...")
     #Get image one to show in black and white
@@ -24,7 +28,7 @@ def builtInCorrelation(originalImage, croppedImage):
     print("Size of cropped eye width: {}".format(wEye))
 
     #This gets the cropped size of the original image and grabs via the eye
-    croppedImg1 = img1Original[0:hEye, 0:wEye]
+    croppedImg1 = img1Original[112:hEye + 112, 107:wEye + 107]
     plt.imshow(croppedImg1, cmap='gray')
     plt.show()
 
@@ -34,6 +38,11 @@ def builtInCorrelation(originalImage, croppedImage):
     print("Location of cor eye height: {}".format(maxLocation[0]))
     print("Location of cor eye width: {}".format(maxLocation[1]))
     plt.imshow(cor, cmap='gray')
+    plt.show()
+
+    #This gets the cropped size of the original image and grabs via the eye
+    croppedImg1 = cor[112-hEye: 112 + hEye, 107-wEye : wEye + 107]
+    plt.imshow(croppedImg1, cmap='gray')
     plt.show()
 
 def correlation(originalImage, croppedImage):
@@ -73,6 +82,11 @@ def correlation(originalImage, croppedImage):
             maxList.append((correlationValue, heightIndex, widthIndex))
 
     plt.imshow(tempImage1, cmap='gray')
+    plt.show()
+
+    #This gets the cropped size of the original image and grabs via the eye
+    croppedImg1 = tempImage1[112-hEye: 112 + hEye, 107-wEye : wEye + 107]
+    plt.imshow(croppedImg1, cmap='gray')
     plt.show()
 
     a = np.array(maxList, dtype=dtype)
@@ -131,6 +145,11 @@ def sumSquareDifference(originalImage, croppedImage):
             maxList.append((correlationValue, heightIndex, widthIndex))
 
     plt.imshow(tempImage1, cmap='gray')
+    plt.show()
+
+    #This gets the cropped size of the original image and grabs via the eye
+    croppedImg1 = tempImage1[112-hEye: 112 + hEye, 107-wEye : wEye + 107]
+    plt.imshow(croppedImg1, cmap='gray')
     plt.show()
 
     a = np.array(maxList, dtype=dtype)
