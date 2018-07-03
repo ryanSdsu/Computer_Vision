@@ -239,11 +239,11 @@ print(trueHarrisCorner[0])
 im = plt.imread('/Users/RJ/PycharmProjects/Computer_Vision/Homework_Four/NotreDame.jpg')
 implot = plt.imshow(im)
 
-# put a blue dot at (10, 20)
+# change the range to adjust the number of dots
 list1=[]
 list2=[]
 list3=[]
-for i in range(50):
+for i in range(len(trueHarrisCorner)):
     list1.append(imageOneHarrisCoordinatesList[trueHarrisCorner[i][1]][0])
     list2.append(imageOneHarrisCoordinatesList[trueHarrisCorner[i][1]][1])
     list3.append(i)
@@ -257,9 +257,9 @@ implot = plt.imshow(im)
 list1=[]
 list2=[]
 list3=[]
-for i in range(50):
-    list1.append(imageOneHarrisCoordinatesList[trueHarrisCorner[i][2]][0])
-    list2.append(imageOneHarrisCoordinatesList[trueHarrisCorner[i][2]][1])
+for i in range(len(trueHarrisCorner)):
+    list1.append(imageTwoHarrisCoordinatesList[trueHarrisCorner[i][2]][0])
+    list2.append(imageTwoHarrisCoordinatesList[trueHarrisCorner[i][2]][1])
     list3.append(i)
 
 plt.scatter(list1, list2, c=list3, cmap='Reds')
