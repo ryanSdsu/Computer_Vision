@@ -7,16 +7,16 @@ import math
 #Get image one to show in black and white
 notreDameImgOneOriginal = cv2.imread('/Users/RJ/PycharmProjects/Computer_Vision/Homework_Four/NotreDame.jpg')
 notreDameImgOneGray = cv2.cvtColor(notreDameImgOneOriginal, cv2.COLOR_BGR2GRAY)
-plt.imshow(notreDameImgOneGray, cmap='gray')
-plt.show()
+# plt.imshow(notreDameImgOneGray, cmap='gray')
+# plt.show()
 heightImageOne = np.size(notreDameImgOneGray, 0)
 widthImageOne = np.size(notreDameImgOneGray,1)
 
 #Get image two to show in black and white
 notreDameImgTwoOriginal = cv2.imread('/Users/RJ/PycharmProjects/Computer_Vision/Homework_Four/NotreDame2.jpg')
 notreDameImgTwoGray = cv2.cvtColor(notreDameImgTwoOriginal, cv2.COLOR_BGR2GRAY)
-plt.imshow(notreDameImgTwoGray, cmap='gray')
-plt.show()
+# plt.imshow(notreDameImgTwoGray, cmap='gray')
+# plt.show()
 heightImageTwo = np.size(notreDameImgTwoGray, 0)
 widthImageTwo = np.size(notreDameImgTwoGray,1)
 
@@ -28,47 +28,34 @@ notreDameImgTwoFloat = np.float32(notreDameImgTwoGray)
 notreDameImgOneHarrisCorner = cv2.cornerHarris(notreDameImgOneFloat, 2, 3, 0, 0.04)
 notreDameImgTwoHarrisCorner = cv2.cornerHarris(notreDameImgTwoFloat, 2, 3, 0, 0.04)
 #Display the Corners for Image One
-plt.imshow(notreDameImgOneHarrisCorner, cmap='gray')
-plt.show()
-#Display the Corners for Image Two
-plt.imshow(notreDameImgTwoHarrisCorner, cmap='gray')
-plt.show()
+# plt.imshow(notreDameImgOneHarrisCorner, cmap='gray')
+# plt.show()
+# #Display the Corners for Image Two
+# plt.imshow(notreDameImgTwoHarrisCorner, cmap='gray')
+# plt.show()
 
 #Gettng the coordinates of the Harris Corners
 maxImageOne = np.amax(notreDameImgOneHarrisCorner)
-imageOneHarrisCoordinates = []
+imageOneHarrisCoordinatesList = []
 
 for i in range(len(notreDameImgOneHarrisCorner[0])):
     for j in range(len(notreDameImgOneHarrisCorner)):
         if notreDameImgOneHarrisCorner[j][i] >= 0.2 * maxImageOne:
-            imageOneHarrisCoordinates.append((j, i))
+            imageOneHarrisCoordinatesList.append((j, i))
             print("Getting coordinates for Harris Corner Img One")
 
-print(imageOneHarrisCoordinates)
+print(imageOneHarrisCoordinatesList)
 
 maxImageTwo = np.amax(notreDameImgTwoHarrisCorner)
-imageTwoHarrisCoordinates = []
+imageTwoHarrisCoordinatesList = []
 
 for i in range(len(notreDameImgTwoHarrisCorner[0])):
     for j in range(len(notreDameImgTwoHarrisCorner)):
         if notreDameImgTwoHarrisCorner[j][i] >= 0.2 * maxImageTwo:
-            imageTwoHarrisCoordinates.append((j, i))
+            imageTwoHarrisCoordinatesList.append((j, i))
             print("Getting coordinates for Harris Corner Img Two")
 
-print(imageTwoHarrisCoordinates)
-
-
-#Threshold the harris corner values so that everything is low won't be shown and the high values will be more highlighted
-#Make the pixel that has a high value, make them red
-#Anything values that are higher than 1 percent of maximum, label them as red
-notreDameImgOneOriginal[notreDameImgOneHarrisCorner>0.01 * notreDameImgOneHarrisCorner.max()] = [0,0,255]
-notreDameImgTwoOriginal[notreDameImgTwoHarrisCorner>0.01 * notreDameImgTwoHarrisCorner.max()] = [0,0, 255]
-
-#Display the original pictures "with" the Harris Corners on top
-plt.imshow(cv2.cvtColor(notreDameImgOneOriginal, cv2.COLOR_BGR2RGB))
-plt.show()
-plt.imshow(cv2.cvtColor(notreDameImgTwoOriginal, cv2.COLOR_BGR2RGB))
-plt.show()
+print(imageTwoHarrisCoordinatesList)
 
 
 #From here crop a region around the coordinates
@@ -176,6 +163,7 @@ def cropOriginalImageIntoFourImageswithHarrisHistograms(image, harrisCoordinates
         #Checking for each Harris Corner bounds i.e. padding is the original picture
         if (hEye <= harrisCorner[0] <= heightImageOne - hEye):
             if (wEye <= harrisCorner[1] <= widthImageOne - wEye):
+                print("Working on harrisCorner: {}".format(image))
                 histogramImage = []
                 #Crop the original image
                 notreDameImgOneHogGrayCropped = notreDameImgOneHogGray[harrisCorner[0]-hEye: harrisCorner[0] + hEye, harrisCorner[1]-wEye : wEye + harrisCorner[1]]
@@ -207,20 +195,94 @@ def cropOriginalImageIntoFourImageswithHarrisHistograms(image, harrisCoordinates
     return harrisAppendedHistograms, harrisCoordinatesKey
 
 #Here we now have the Harris Corner Histograms (each img cropped into 4) and their respective coordiantes
-imageOneHarrisHistograms, imageOneHarrisCoordinates  = cropOriginalImageIntoFourImageswithHarrisHistograms('/Users/RJ/PycharmProjects/Computer_Vision/Homework_Four/NotreDame.jpg' , imageOneHarrisCoordinates)
-imageTwoHarrisHistograms, imageTwoHarrisCoordinates = cropOriginalImageIntoFourImageswithHarrisHistograms('/Users/RJ/PycharmProjects/Computer_Vision/Homework_Four/NotreDame.jpg' , imageTwoHarrisCoordinates)
+imageOneHarrisHistogramsList, imageOneHarrisCoordinatesList  = cropOriginalImageIntoFourImageswithHarrisHistograms('/Users/RJ/PycharmProjects/Computer_Vision/Homework_Four/NotreDame.jpg', imageOneHarrisCoordinatesList)
+imageTwoHarrisHistogramsList, imageTwoHarrisCoordinatesList = cropOriginalImageIntoFourImageswithHarrisHistograms('/Users/RJ/PycharmProjects/Computer_Vision/Homework_Four/NotreDame.jpg', imageTwoHarrisCoordinatesList)
 
-print(len(imageOneHarrisHistograms))
-print(len(imageOneHarrisCoordinates))
+print(imageOneHarrisCoordinatesList)
 
-print(len(imageTwoHarrisHistograms))
-print(len(imageTwoHarrisCoordinates))
+
+#Now we need to sort/organize the distances so that we can get the smallest distance for each Harris Corner
+dtype = [('distance', int), ('coordinateImgOne', int), ('coordinateImgTwo', int)]
+harrisHistogramsDistanceList = []
+trueHarrisCorner = []
+
+for idxOne, harrisHistogramImgOne in enumerate(imageOneHarrisHistogramsList):
+    for idxTwo, harrisHistogramImgTwo in enumerate(imageTwoHarrisHistogramsList):
+        distanceList = list(np.array(harrisHistogramImgOne) - np.array(harrisHistogramImgTwo))
+        distanceList =  np.abs(distanceList)
+        totalDistance = sum(distanceList)
+        harrisHistogramsDistanceList.append((totalDistance, idxOne, idxTwo))
+    harrisHistogramsDistanceList = np.array(harrisHistogramsDistanceList, dtype=dtype)
+    harrisHistogramsDistanceList = np.sort(harrisHistogramsDistanceList, order ="distance")
+    print(harrisHistogramsDistanceList)
+    print(harrisHistogramsDistanceList[0])
+    trueHarrisCorner.append(harrisHistogramsDistanceList[0])
+    harrisHistogramsDistanceList = []
+
+trueHarrisCorner = np.array(trueHarrisCorner, dtype=dtype)
+trueHarrisCorner = np.sort(trueHarrisCorner, order ="distance")
+print(trueHarrisCorner)
+print(trueHarrisCorner[0])
+
+
+# #Everything is inside the "trueHarrisCorner" list => tuple(minimum distance between two Harris Corners,
+# #Harris corner coordinates key for image One, Harris corner coordinates key for image Two)
+#
+# #this is the smallest distance between two Harris Corners
+# print(trueHarrisCorner[0][0])
+# #these are the coordinates for the Harris Corner in the first Image
+# print(imageOneHarrisCoordinatesList[trueHarrisCorner[0][1]])
+# #these are the coordinates for the Harris Corner in the second Image
+# print(imageOneHarrisCoordinatesList[trueHarrisCorner[0][2]])
+
+
+im = plt.imread('/Users/RJ/PycharmProjects/Computer_Vision/Homework_Four/NotreDame.jpg')
+implot = plt.imshow(im)
+
+# put a blue dot at (10, 20)
+list1=[]
+list2=[]
+list3=[]
+for i in range(50):
+    list1.append(imageOneHarrisCoordinatesList[trueHarrisCorner[i][1]][0])
+    list2.append(imageOneHarrisCoordinatesList[trueHarrisCorner[i][1]][1])
+    list3.append(i)
+
+plt.scatter(list1, list2, c=list3, cmap='Reds')
+plt.show()
+
+im = plt.imread('/Users/RJ/PycharmProjects/Computer_Vision/Homework_Four/NotreDame2.jpg')
+implot = plt.imshow(im)
+
+list1=[]
+list2=[]
+list3=[]
+for i in range(50):
+    list1.append(imageOneHarrisCoordinatesList[trueHarrisCorner[i][2]][0])
+    list2.append(imageOneHarrisCoordinatesList[trueHarrisCorner[i][2]][1])
+    list3.append(i)
+
+plt.scatter(list1, list2, c=list3, cmap='Reds')
+plt.show()
 
 ########Creating the HOG END############
 
 
 
 
+
+
+#Threshold the harris corner values so that everything is low won't be shown and the high values will be more highlighted
+#Make the pixel that has a high value, make them red
+#Anything values that are higher than 1 percent of maximum, label them as red
+notreDameImgOneOriginal[notreDameImgOneHarrisCorner>0.01 * notreDameImgOneHarrisCorner.max()] = [0,0,255]
+notreDameImgTwoOriginal[notreDameImgTwoHarrisCorner>0.01 * notreDameImgTwoHarrisCorner.max()] = [0,0, 255]
+
+#Display the original pictures "with" the Harris Corners on top
+plt.imshow(cv2.cvtColor(notreDameImgOneOriginal, cv2.COLOR_BGR2RGB))
+plt.show()
+plt.imshow(cv2.cvtColor(notreDameImgTwoOriginal, cv2.COLOR_BGR2RGB))
+plt.show()
 
 
 ###Open CV has a way to "Create Feature Descriptors" as well as do the "Match Feature Descriptors" part of the assignment.
