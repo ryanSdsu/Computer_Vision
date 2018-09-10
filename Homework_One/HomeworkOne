@@ -3,39 +3,7 @@ import numpy as np
 from numpy import zeros
 import os
 from ComputerVision_Library import *
-
-#Q1.2
-#random permutations, shuffle the array
-testList = [1,2,3,4,5,6,7,8,9,10]
-shuffle(testList)
-print(testList)
-
-#Splice the array forward
-testListTwo = [1,2,3,4,5,6,7,8,9,10]
-testListSpliceByThree = testListTwo[0:11:3]
-print(testListSpliceByThree)
-
-#Find all the elements that are above 6
-testListTwo = [1,2,3,4,5,6,7,8,9,10]
-testListGreaterThanSix = [i for i in testListTwo if i > 6]
-print(testListGreaterThanSix)
-
-#Change all the values to 22 in a list
-testListOneValues = np.empty(10)
-testListOneValues.fill(1)
-testListOneValues = list(map(int,testListOneValues))
-testListOneValues = [i*22 for i in testListOneValues]
-
-#Sum of the list
-testListThree = [1,2,3,4,5,6,7,8,9,10]
-sumOfListThree = sum(testListThree)
-print(sumOfListThree)
-
-#Splice the array backwards
-testListFour = [1,2,3,4,5,6,7,8,9,10]
-testListSpliceDecrement = testListFour[len(testListFour) :  : -1]
-print(testListSpliceDecrement)
-
+import sys
 
 #Q3
 #For part a, read in the image, grab all of the intensities in a 100X100 array (the intensities are between 0-255),
@@ -61,27 +29,21 @@ displayImage(imageOne_sorted, plt='hist', bin=32)
 threshold = 123
 displayImage(imageOne, color='gray')
 
-
 binaryImage = numpy.array(imageOne, copy=True)
-for i in range(len(imageOne[0])):
-    for j in range(len(imageOne)):
-        if imageOne[i][j] > threshold:
-            binaryImage[i][j] = 255
-        else:
-            binaryImage[i][j] = 0
+newImage = np.where(np.logical_and(-sys.maxsize - 1<=binaryImage, binaryImage<=123), 0, binaryImage)
+newImage = np.where(np.logical_and(124<=newImage, newImage<=sys.maxsize), 255, newImage)
 
-displayImage(binaryImage, color='gray')
+displayImage(newImage, color='gray')
 
 
 #Part D
 mean_A = numpy.mean(imageOne_reshape)
 image_mean = imageOne - mean_A
-for i in range(len(image_mean[0])):
-    for j in range(len(image_mean)):
-        if image_mean[i][j] < 0:
-            image_mean[i][j] = 0
 
-displayImage(image_mean, color='gray')
+newImage = np.where(np.logical_and(-sys.maxsize - 1<=image_mean, image_mean<=0), 0, image_mean)
+
+displayImage(newImage, color='gray')
+
 
 
 #Part E
@@ -98,12 +60,18 @@ print(list(z))
 x = 9999
 r = 0
 c = 0
-for i in range(len(imageOne)):
-    for j in range(len(imageOne[0])):
-        if imageOne[i][j] < x:
-            x = imageOne[i][j]
-            r = i
-            c = j
+# for i in range(len(imageOne)):
+#     for j in range(len(imageOne[0])):
+#         if imageOne[i][j] < x:
+#             x = imageOne[i][j]
+#             r = i
+#             c = j
+
+minimumPixel = np.where(imageOne == np.min(imageOne))
+r = minimumPixel[0][0]
+c = minimumPixel[1][0]
+x = imageOne[r][c]
+print("min value: {} at {},{}".format(x, r, c))
 
 print("min value: {} at {},{}".format(x, r, c))
 
