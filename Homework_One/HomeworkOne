@@ -2,6 +2,7 @@ from random import *
 import numpy as np
 from numpy import zeros
 import os
+from ComputerVision_Library import *
 
 #Q1.2
 #random permutations, shuffle the array
@@ -50,18 +51,16 @@ imageOne = cv2.imread('/Users/RJ/PycharmProjects/Computer_Vision/Homework_One/te
 imageOne = cv2.resize(imageOne, (100, 100))
 imageOne_reshape = numpy.reshape(imageOne, (1, 100 * 100))
 imageOne_sorted = numpy.sort(imageOne_reshape[0])
-plt.plot(imageOne_sorted)
-plt.show()
+displayImage(imageOne_sorted, plt='plot')
+
 
 #Part B
-plt.hist(imageOne_sorted, bins=32)
-plt.show()
+displayImage(imageOne_sorted, plt='hist', bin=32)
 
 #Part C
 threshold = 123
-print(imageOne)
-plt.imshow(imageOne, cmap='gray')
-plt.show()
+displayImage(imageOne, color='gray')
+
 
 binaryImage = numpy.array(imageOne, copy=True)
 for i in range(len(imageOne[0])):
@@ -71,8 +70,8 @@ for i in range(len(imageOne[0])):
         else:
             binaryImage[i][j] = 0
 
-plt.imshow(binaryImage, cmap='gray')
-plt.show()
+displayImage(binaryImage, color='gray')
+
 
 #Part D
 mean_A = numpy.mean(imageOne_reshape)
@@ -82,8 +81,8 @@ for i in range(len(image_mean[0])):
         if image_mean[i][j] < 0:
             image_mean[i][j] = 0
 
-plt.imshow(image_mean, cmap='gray')
-plt.show()
+displayImage(image_mean, color='gray')
+
 
 #Part E
 die_side = range(1,7)
@@ -124,7 +123,7 @@ Tip: Use the looping over the directory from Kyles class to work this one out
 """
 
 #Color Avg
-directoryInString ="/Users/RJ/PycharmProjects/Computer_Vision/Homework_One/Images"
+directoryInString ="/Users/RJ/PycharmProjects/Computer_Vision/Homework_One/set1"
 directory = os.fsencode(directoryInString)
 
 totalAvg = 0
@@ -135,14 +134,11 @@ bAvg =  zeros((100,100))
 numberOfFrames = 0
 for file in os.listdir(directory):
     filename = os.fsdecode(file)
-    if filename.endswith(".png"):
+    if filename.endswith(".jpg"):
         filename = directoryInString + "/" + filename
         image = cv2.imread(filename)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         image = cv2.resize(image, (100,100))
-
-        plt.imshow(image)
-        plt.show()
 
         rImage = image[:,:,0]
         gImage = image[:,:,1]
@@ -172,12 +168,12 @@ gAvg = gAvg.astype(np.uint8)
 bAvg = bAvg.astype(np.uint8)
 
 im3 = cv2.merge((rAvg,gAvg,bAvg))
-plt.imshow(im3)
-plt.show()
+displayImage(im3)
+
 
 
 #Black and White Avg
-directoryInString ="/Users/RJ/PycharmProjects/Computer_Vision/Homework_One/Images"
+directoryInString ="/Users/RJ/PycharmProjects/Computer_Vision/Homework_One/set1"
 directory = os.fsencode(directoryInString)
 
 totalAvg = 0
@@ -186,13 +182,11 @@ blackAndWhiteAvg =  zeros((100,100))
 numberOfFrames = 0
 for file in os.listdir(directory):
     filename = os.fsdecode(file)
-    if filename.endswith(".png"):
+    if filename.endswith(".jpg"):
         filename = directoryInString + "/" + filename
         image = cv2.imread(filename)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         image = cv2.resize(image, (100,100))
-        plt.imshow(image, cmap='gray')
-        plt.show()
 
         for i in range(len(image[0])):
             for j in range(len(image)):
@@ -207,8 +201,7 @@ blackAndWhiteAvg = blackAndWhiteAvg / numberOfFrames
 
 blackAndWhiteAvg = blackAndWhiteAvg.astype(np.uint8)
 
-plt.imshow(blackAndWhiteAvg, cmap='gray')
-plt.show()
+displayImage(blackAndWhiteAvg, color='gray')
 
 
 
@@ -216,7 +209,7 @@ plt.show()
 #Standard Deviation, black and white
 
 #First step is to make 2 frames (mean and std) that will hold everything and is the same size as the default images and N
-directoryInString ="/Users/RJ/PycharmProjects/Computer_Vision/Homework_One/Images"
+directoryInString ="/Users/RJ/PycharmProjects/Computer_Vision/Homework_One/set1"
 directory = os.fsencode(directoryInString)
 
 numberOfFrames = 0
@@ -227,7 +220,7 @@ blackAndWhiteStd =  zeros((100,100))
 #The Next step is to populate one of the frames so that it has the mean of every single pixel added together
 for file in os.listdir(directory):
     filename = os.fsdecode(file)
-    if filename.endswith(".png"):
+    if filename.endswith(".jpg"):
         filename = directoryInString + "/" + filename
         image = cv2.imread(filename)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -245,7 +238,7 @@ blackAndWhiteMean = blackAndWhiteMean / numberOfFrames
 #Then loop through every image again and at each pixel subtract the mean from the pixel, square it and add it to the other frame cummuatively
 for file in os.listdir(directory):
     filename = os.fsdecode(file)
-    if filename.endswith(".png"):
+    if filename.endswith(".jpg"):
         filename = directoryInString + "/" + filename
         image = cv2.imread(filename)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -265,8 +258,7 @@ blackAndWhiteStd = blackAndWhiteStd.astype(np.uint8)
 print(blackAndWhiteStd)
 
 print(blackAndWhiteStd.shape)
-plt.imshow(blackAndWhiteStd, cmap='gray')
-plt.show()
+displayImage(blackAndWhiteStd, color='gray')
 
 
 #https://stackoverflow.com/questions/25910050/perform-local-standard-deviation-in-python
@@ -275,7 +267,7 @@ plt.show()
 
 #Color Avg
 #First step is to make 6 frames (mean and std) that will hold everything and is the same size as the default images and N
-directoryInString ="/Users/RJ/PycharmProjects/Computer_Vision/Homework_One/Images"
+directoryInString ="/Users/RJ/PycharmProjects/Computer_Vision/Homework_One/set1"
 directory = os.fsencode(directoryInString)
 
 numberOfFrames = 0
@@ -289,7 +281,7 @@ bStd =  zeros((100,100))
 #The Next step is to populate all 3 mean frames so that it has the mean of every single pixel added together
 for file in os.listdir(directory):
     filename = os.fsdecode(file)
-    if filename.endswith(".png"):
+    if filename.endswith(".jpg"):
         filename = directoryInString + "/" + filename
         image = cv2.imread(filename)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -321,7 +313,7 @@ bMean = bMean / numberOfFrames
 #Then loop through every image again and at each pixel subtract the mean from the pixel, square it and add it to the other frame cummuatively
 for file in os.listdir(directory):
     filename = os.fsdecode(file)
-    if filename.endswith(".png"):
+    if filename.endswith(".jpg"):
         filename = directoryInString + "/" + filename
         image = cv2.imread(filename)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -357,5 +349,242 @@ gStd = gStd.astype(np.uint8)
 bStd = bStd.astype(np.uint8)
 
 im3 = cv2.merge((rStd,gStd,bStd))
-plt.imshow(im3)
-plt.show()
+displayImage(im3)
+
+"""
+Go through the directory and get each of the images. 
+Loop through them and maintain the averages via the RBG and the Grayscale compounding on top of each other. 
+Store them globally and then output the avg of all the images once all the images have been reviewed. 
+Do this for both the grayscale and the RGB. 
+
+Tip: Use the looping over the directory from Kyles class to work this one out
+"""
+
+#Color Avg
+directoryInString ="/Users/RJ/PycharmProjects/Computer_Vision/Homework_One/set2"
+directory = os.fsencode(directoryInString)
+
+totalAvg = 0
+rAvg =  zeros((100,100))
+gAvg =  zeros((100,100))
+bAvg =  zeros((100,100))
+
+numberOfFrames = 0
+for file in os.listdir(directory):
+    filename = os.fsdecode(file)
+    if filename.endswith(".jpg"):
+        filename = directoryInString + "/" + filename
+        image = cv2.imread(filename)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        image = cv2.resize(image, (100,100))
+
+        rImage = image[:,:,0]
+        gImage = image[:,:,1]
+        bImage = image[:,:,2]
+
+        for i in range(len(rImage[0])):
+            for j in range(len(rImage)):
+                rAvg[i][j] += rImage[i][j]
+
+        for i in range(len(gImage[0])):
+            for j in range(len(gImage)):
+                gAvg[i][j] += gImage[i][j]
+
+        for i in range(len(bImage[0])):
+            for j in range(len(bImage)):
+                bAvg[i][j] += bImage[i][j]
+
+        numberOfFrames += 1
+        continue
+
+rAvg = rAvg / numberOfFrames
+gAvg = gAvg / numberOfFrames
+bAvg = bAvg / numberOfFrames
+
+rAvg = rAvg.astype(np.uint8)
+gAvg = gAvg.astype(np.uint8)
+bAvg = bAvg.astype(np.uint8)
+
+im3 = cv2.merge((rAvg,gAvg,bAvg))
+displayImage(im3)
+
+
+
+#Black and White Avg
+directoryInString ="/Users/RJ/PycharmProjects/Computer_Vision/Homework_One/set2"
+directory = os.fsencode(directoryInString)
+
+totalAvg = 0
+blackAndWhiteAvg =  zeros((100,100))
+
+numberOfFrames = 0
+for file in os.listdir(directory):
+    filename = os.fsdecode(file)
+    if filename.endswith(".jpg"):
+        filename = directoryInString + "/" + filename
+        image = cv2.imread(filename)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        image = cv2.resize(image, (100,100))
+
+        for i in range(len(image[0])):
+            for j in range(len(image)):
+                blackAndWhiteAvg[i][j] += image[i][j]
+
+        print(blackAndWhiteAvg)
+
+        numberOfFrames += 1
+        continue
+
+blackAndWhiteAvg = blackAndWhiteAvg / numberOfFrames
+
+blackAndWhiteAvg = blackAndWhiteAvg.astype(np.uint8)
+
+displayImage(blackAndWhiteAvg, color='gray')
+
+
+
+#https://stackoverflow.com/questions/25910050/perform-local-standard-deviation-in-python
+#Standard Deviation, black and white
+
+#First step is to make 2 frames (mean and std) that will hold everything and is the same size as the default images and N
+directoryInString ="/Users/RJ/PycharmProjects/Computer_Vision/Homework_One/set2"
+directory = os.fsencode(directoryInString)
+
+numberOfFrames = 0
+blackAndWhiteMean =  zeros((100,100))
+blackAndWhiteStd =  zeros((100,100))
+
+
+#The Next step is to populate one of the frames so that it has the mean of every single pixel added together
+for file in os.listdir(directory):
+    filename = os.fsdecode(file)
+    if filename.endswith(".jpg"):
+        filename = directoryInString + "/" + filename
+        image = cv2.imread(filename)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        image = cv2.resize(image, (100,100))
+
+        for i in range(len(image[0])):
+            for j in range(len(image)):
+                blackAndWhiteMean[i][j] += image[i][j]
+
+        numberOfFrames += 1
+        continue
+
+blackAndWhiteMean = blackAndWhiteMean / numberOfFrames
+
+#Then loop through every image again and at each pixel subtract the mean from the pixel, square it and add it to the other frame cummuatively
+for file in os.listdir(directory):
+    filename = os.fsdecode(file)
+    if filename.endswith(".jpg"):
+        filename = directoryInString + "/" + filename
+        image = cv2.imread(filename)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        image = cv2.resize(image, (100,100))
+
+        for i in range(len(image[0])):
+            for j in range(len(image)):
+                blackAndWhiteStd[i][j] = (image[i][j] - blackAndWhiteMean[i][j]) ** 2
+        continue
+
+#From there divide each pixel by N
+blackAndWhiteStd = blackAndWhiteStd / numberOfFrames
+
+#Build the image
+blackAndWhiteStd = blackAndWhiteStd.astype(np.uint8)
+
+print(blackAndWhiteStd)
+
+print(blackAndWhiteStd.shape)
+displayImage(blackAndWhiteStd, color='gray')
+
+
+#https://stackoverflow.com/questions/25910050/perform-local-standard-deviation-in-python
+#Standard Deviation, color
+
+
+#Color Avg
+#First step is to make 6 frames (mean and std) that will hold everything and is the same size as the default images and N
+directoryInString ="/Users/RJ/PycharmProjects/Computer_Vision/Homework_One/set2"
+directory = os.fsencode(directoryInString)
+
+numberOfFrames = 0
+rMean =  zeros((100,100))
+gMean =  zeros((100,100))
+bMean =  zeros((100,100))
+rStd =  zeros((100,100))
+gStd =  zeros((100,100))
+bStd =  zeros((100,100))
+
+#The Next step is to populate all 3 mean frames so that it has the mean of every single pixel added together
+for file in os.listdir(directory):
+    filename = os.fsdecode(file)
+    if filename.endswith(".jpg"):
+        filename = directoryInString + "/" + filename
+        image = cv2.imread(filename)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        image = cv2.resize(image, (100,100))
+
+        rImage = image[:,:,0]
+        gImage = image[:,:,1]
+        bImage = image[:,:,2]
+
+        for i in range(len(rImage[0])):
+            for j in range(len(rImage)):
+                rMean[i][j] += rImage[i][j]
+
+        for i in range(len(gImage[0])):
+            for j in range(len(gImage)):
+                gMean[i][j] += gImage[i][j]
+
+        for i in range(len(bImage[0])):
+            for j in range(len(bImage)):
+                bMean[i][j] += bImage[i][j]
+
+        numberOfFrames += 1
+        continue
+
+rMean = rMean / numberOfFrames
+gMean = gMean / numberOfFrames
+bMean = bMean / numberOfFrames
+
+#Then loop through every image again and at each pixel subtract the mean from the pixel, square it and add it to the other frame cummuatively
+for file in os.listdir(directory):
+    filename = os.fsdecode(file)
+    if filename.endswith(".jpg"):
+        filename = directoryInString + "/" + filename
+        image = cv2.imread(filename)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        image = cv2.resize(image, (100,100))
+
+        rImage = image[:,:,0]
+        gImage = image[:,:,1]
+        bImage = image[:,:,2]
+
+        for i in range(len(rImage[0])):
+            for j in range(len(rImage)):
+                rStd[i][j] = (rImage[i][j] - rMean[i][j]) ** 2
+
+        for i in range(len(gImage[0])):
+            for j in range(len(gImage)):
+                gStd[i][j] = (gImage[i][j] - gMean[i][j]) ** 2
+
+        for i in range(len(bImage[0])):
+            for j in range(len(bImage)):
+                bStd[i][j] = (bImage[i][j] - bMean[i][j]) ** 2
+
+        continue
+
+
+#From there divide each pixel by N
+rStd = rStd / numberOfFrames
+gStd = gStd / numberOfFrames
+bStd = bStd / numberOfFrames
+
+#Build the image
+rStd = rStd.astype(np.uint8)
+gStd = gStd.astype(np.uint8)
+bStd = bStd.astype(np.uint8)
+
+im3 = cv2.merge((rStd,gStd,bStd))
+displayImage(im3)
