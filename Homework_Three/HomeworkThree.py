@@ -4,9 +4,6 @@ import matplotlib.pyplot as plt
 from scipy import signal
 from scipy.stats.stats import pearsonr
 
-# https://stackoverflow.com/questions/6991471/computing-cross-correlation-function
-# Use the cv match template for the built in functions
-# cv.MatchTemplate(templateCv, imageCv, resultCv, cv.CV_TM_CCORR_NORMED)
 
 def builtInNormalizedCrossCorrelation(originalImage, croppedImage, scale):
     print("Data for builtInNormalizedCrossCorrelation... with a scale of: {}".format(scale))
@@ -25,7 +22,6 @@ def builtInNormalizedCrossCorrelation(originalImage, croppedImage, scale):
     plt.show()
 
     #Get the height and width of the eye image as well as the original
-
     print("Size of cropped eye height: {}".format(hEye))
     print("Size of cropped eye width: {}".format(wEye))
 
@@ -205,7 +201,7 @@ def sumSquareDifference(originalImage, croppedImage, scale):
     dtype = [('score', float), ('height', int), ('width', int)]
     maxList = []
 
-    #This does the "Correlation" i.e. Q1
+    #This does the "SSD" i.e. Q2
     tempImage1 = np.zeros_like(img1Original)
 
     max = 0
@@ -250,31 +246,4 @@ def sumSquareDifference(originalImage, croppedImage, scale):
     print(a[-1])
     print("Localization error: ({}, {})".format(abs(a[-1][1] - 117), abs(a[-1][2] - 117)))
 
-
 #Location of eye 117,117
-builtInZeroMeanCorrelation("/Users/RJ/PycharmProjects/Computer_Vision/Homework_Three/image1.jpg",
-                           "/Users/RJ/PycharmProjects/Computer_Vision/Homework_Three/image1Eye.jpg", 0.5)
-
-builtInZeroMeanCorrelation("/Users/RJ/PycharmProjects/Computer_Vision/Homework_Three/image1.jpg",
-                           "/Users/RJ/PycharmProjects/Computer_Vision/Homework_Three/image1Eye.jpg", 1)
-
-builtInZeroMeanCorrelation("/Users/RJ/PycharmProjects/Computer_Vision/Homework_Three/image1.jpg",
-                           "/Users/RJ/PycharmProjects/Computer_Vision/Homework_Three/image1Eye.jpg", 2)
-
-builtInNormalizedCrossCorrelation("/Users/RJ/PycharmProjects/Computer_Vision/Homework_Three/image1.jpg",
-            "/Users/RJ/PycharmProjects/Computer_Vision/Homework_Three/image1Eye.jpg", 0.5)
-
-builtInNormalizedCrossCorrelation("/Users/RJ/PycharmProjects/Computer_Vision/Homework_Three/image1.jpg",
-            "/Users/RJ/PycharmProjects/Computer_Vision/Homework_Three/image1Eye.jpg", 1)
-
-builtInNormalizedCrossCorrelation("/Users/RJ/PycharmProjects/Computer_Vision/Homework_Three/image1.jpg",
-            "/Users/RJ/PycharmProjects/Computer_Vision/Homework_Three/image1Eye.jpg", 2)
-
-builtInSSQD("/Users/RJ/PycharmProjects/Computer_Vision/Homework_Three/image1.jpg",
-                "/Users/RJ/PycharmProjects/Computer_Vision/Homework_Three/image1Eye.jpg", 0.5)
-
-builtInSSQD("/Users/RJ/PycharmProjects/Computer_Vision/Homework_Three/image1.jpg",
-            "/Users/RJ/PycharmProjects/Computer_Vision/Homework_Three/image1Eye.jpg", 1)
-
-builtInSSQD("/Users/RJ/PycharmProjects/Computer_Vision/Homework_Three/image1.jpg",
-            "/Users/RJ/PycharmProjects/Computer_Vision/Homework_Three/image1Eye.jpg", 2)
